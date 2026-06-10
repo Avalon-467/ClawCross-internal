@@ -106,36 +106,40 @@ def _download_cloudflared():
     返回：
         str or None: 成功返回下载后的路径，失败返回 None
     """
-    os_name, arch = detect_platform()
-    url = get_download_url(os_name, arch)
-    if not url:
-        return None
+    # 已禁用自动下载 cloudflared：返回 None，交由 ensure_cloudflared 打印手动安装指南。
+    return None
 
-    print(f"📥 正在自动下载 cloudflared ({os_name}/{arch})...")
-    print(f"   URL: {url}")
-
-    try:
-        os.makedirs(BIN_DIR, exist_ok=True)
-        import urllib.request
-        if os_name == "darwin":
-            # macOS: 下载 tgz 压缩包并解压
-            tgz_path = os.path.join(BIN_DIR, "cloudflared.tgz")
-            urllib.request.urlretrieve(url, tgz_path)
-            import tarfile
-            with tarfile.open(tgz_path, "r:gz") as tar:
-                tar.extract("cloudflared", BIN_DIR)
-            os.remove(tgz_path)
-        else:
-            # Linux/Windows: 直接下载二进制文件
-            urllib.request.urlretrieve(url, CLOUDFLARED_PATH)
-
-        if not IS_WINDOWS:
-            os.chmod(CLOUDFLARED_PATH, 0o755)
-        print(f"✅ cloudflared 已下载到: {CLOUDFLARED_PATH}")
-        return CLOUDFLARED_PATH
-    except Exception as e:
-        print(f"❌ 自动下载失败: {e}")
-        return None
+    # --- 原自动下载逻辑（已禁用） ---
+    # os_name, arch = detect_platform()
+    # url = get_download_url(os_name, arch)
+    # if not url:
+    #     return None
+    #
+    # print(f"📥 正在自动下载 cloudflared ({os_name}/{arch})...")
+    # print(f"   URL: {url}")
+    #
+    # try:
+    #     os.makedirs(BIN_DIR, exist_ok=True)
+    #     import urllib.request
+    #     if os_name == "darwin":
+    #         # macOS: 下载 tgz 压缩包并解压
+    #         tgz_path = os.path.join(BIN_DIR, "cloudflared.tgz")
+    #         urllib.request.urlretrieve(url, tgz_path)
+    #         import tarfile
+    #         with tarfile.open(tgz_path, "r:gz") as tar:
+    #             tar.extract("cloudflared", BIN_DIR)
+    #         os.remove(tgz_path)
+    #     else:
+    #         # Linux/Windows: 直接下载二进制文件
+    #         urllib.request.urlretrieve(url, CLOUDFLARED_PATH)
+    #
+    #     if not IS_WINDOWS:
+    #         os.chmod(CLOUDFLARED_PATH, 0o755)
+    #     print(f"✅ cloudflared 已下载到: {CLOUDFLARED_PATH}")
+    #     return CLOUDFLARED_PATH
+    # except Exception as e:
+    #     print(f"❌ 自动下载失败: {e}")
+    #     return None
 
 
 def get_install_guide(os_name, arch):
